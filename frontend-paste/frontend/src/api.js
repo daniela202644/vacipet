@@ -2,6 +2,9 @@ const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '')
   || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
 async function request(path, options = {}) {
+  if (!API_URL) {
+    throw new Error('Login, cadastro e dados pessoais precisam de uma API hospedada; esta versão GitHub Pages é apenas informativa.');
+  }
   const token = localStorage.getItem('vacipet:token')
     || sessionStorage.getItem('vacipet:token');
   const response = await fetch(`${API_URL}${path}`, {

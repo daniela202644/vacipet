@@ -1,6 +1,7 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { clearTutorSession, getTutorSession } from '../api';
 
+const isStaticPagesBuild = import.meta.env.PROD && !import.meta.env.VITE_API_URL;
 const links = [
   { to: '/', label: 'Início', icon: 'home' },
   { to: '/pet', label: 'Meus pets', icon: 'pets' },
@@ -10,7 +11,7 @@ const links = [
   { to: '/saude', label: 'Saúde', icon: 'health_and_safety' },
   { to: '/loja', label: 'Loja', icon: 'shopping_bag' },
   { to: '/sobre-nos', label: 'Sobre nós', icon: 'info' },
-];
+].filter(({ to }) => !isStaticPagesBuild || ['/', '/receitas', '/saude', '/loja', '/sobre-nos'].includes(to));
 
 export default function GlobalNavigation() {
   const { pathname } = useLocation();
@@ -67,12 +68,12 @@ export default function GlobalNavigation() {
           <span className="material-symbols-outlined text-lg">logout</span>
           <span className="hidden sm:inline">Sair</span>
         </button>
-      ) : (
+      ) : !isStaticPagesBuild ? (
         <NavLink to="/login" className="flex flex-1 min-w-fit items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high hover:text-primary">
           <span className="material-symbols-outlined text-lg">account_circle</span>
           <span className="hidden sm:inline">Entrar</span>
         </NavLink>
-      )}
+      ) : null}
     </nav>
   );
 }

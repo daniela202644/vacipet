@@ -22,6 +22,12 @@ O GitHub mantém o código; ele não hospeda o backend Express nem o PostgreSQL.
 
 Não publique arquivos `.env` nem credenciais no GitHub. O `.env.example` contém apenas nomes e exemplos de variáveis.
 
+### GitHub Pages
+
+O workflow `.github/workflows/pages.yml` publica automaticamente uma versão informativa em `https://daniela202644.github.io/vacipet/` quando há push para `main`. No repositório, abra **Settings > Pages** e selecione **GitHub Actions** como fonte se ainda não estiver configurada.
+
+GitHub Pages não executa Express nem PostgreSQL. Sem uma variável `VITE_API_URL`, a página publica as seções informativas; login, cadastro, agenda e dados pessoais precisam do backend hospedado descrito acima. Para ativá-los, configure `VITE_API_URL` como variável de repositório apontando para a API e permita essa origem no `FRONTEND_URL` do backend.
+
 ## Migrar dados locais
 
 O PostgreSQL hospedado começa vazio. Para levar os dados locais, faça um backup com `pg_dump` e restaure-o no banco gerenciado pelo Render antes de compartilhar o site. Guarde o backup fora do repositório. Ao iniciar, a aplicação migra senhas antigas para hashes sem mudar as senhas usadas pelos tutores.

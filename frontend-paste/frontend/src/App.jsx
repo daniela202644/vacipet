@@ -13,6 +13,7 @@ import RecupSenhaPage from './pages/RecupSenhaPage';
 import SaudePetsPage from './pages/SaudePetsPage';
 import { getTutorSession } from './api';
 
+const isGithubPagesBuild = import.meta.env.PROD && !import.meta.env.VITE_API_URL;
 
 
 function AppLayout() {
@@ -38,17 +39,27 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/recuperar-senha" element={<RecupSenhaPage />} />
 
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/pet" element={<PetProfilePage />} />
-            <Route path="/pet/:id" element={<PetProfilePage />} />
-            <Route path="/receitas" element={<ReceitasPage />} />
-            <Route path="/carteira" element={<CarteiraPage />} />
-            <Route path="/agendamento" element={<AgendamentoPet />} />
-            <Route path="/loja" element={<LojaPage />} />
-            <Route path="/sobre-nos" element={<SobrenosPage />} />
-            <Route path="/saude" element={<SaudePetsPage />} />
-          </Route>
+          {isGithubPagesBuild ? (
+            <>
+              <Route path="/" element={<SobrenosPage />} />
+              <Route path="/receitas" element={<ReceitasPage />} />
+              <Route path="/loja" element={<LojaPage />} />
+              <Route path="/sobre-nos" element={<SobrenosPage />} />
+              <Route path="/saude" element={<SaudePetsPage />} />
+            </>
+          ) : (
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/pet" element={<PetProfilePage />} />
+              <Route path="/pet/:id" element={<PetProfilePage />} />
+              <Route path="/receitas" element={<ReceitasPage />} />
+              <Route path="/carteira" element={<CarteiraPage />} />
+              <Route path="/agendamento" element={<AgendamentoPet />} />
+              <Route path="/loja" element={<LojaPage />} />
+              <Route path="/sobre-nos" element={<SobrenosPage />} />
+              <Route path="/saude" element={<SaudePetsPage />} />
+            </Route>
+          )}
 
           <Route path="/Receitas" element={<Navigate to="/receitas" replace />} />
           <Route path="/Carteira" element={<Navigate to="/carteira" replace />} />
