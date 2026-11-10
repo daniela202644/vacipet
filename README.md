@@ -1,39 +1,29 @@
 # VaciPet
 
-## Requisitos
+Aplicação React/Vite com API Express e PostgreSQL.
 
-- Node.js
-- PostgreSQL
+## Desenvolvimento local
 
-## Backend
+1. Instale as dependências em `backend-paste` e `frontend-paste/frontend` com `npm install`.
+2. Crie um banco PostgreSQL local e copie `.env.example` para `.env`, preenchendo a conexão em `DATABASE_URL` ou os campos `DB_*`.
+3. Inicie o backend com `npm start` em `backend-paste`.
+4. Inicie o frontend com `npm run dev` em `frontend-paste/frontend` e abra `http://localhost:5173`.
 
-Na pasta `backend-paste`, execute:
+O backend prepara as tabelas ao iniciar. Senhas são armazenadas com hash; contas antigas são migradas automaticamente na inicialização.
 
-```powershell
-npm install
-npm start
-```
+## Publicar pelo GitHub
 
-O backend roda em `http://localhost:5000`.
+O GitHub mantém o código; ele não hospeda o backend Express nem o PostgreSQL. O `render.yaml` configura o Render para publicar o frontend e a API no mesmo domínio e criar um PostgreSQL gerenciado.
 
-## Frontend
+1. Envie o repositório e as alterações para o GitHub.
+2. No Render, escolha **New > Blueprint** e conecte o repositório que contém este arquivo.
+3. Revise os recursos e custos antes de confirmar. O Blueprint usa planos pagos para manter o serviço ativo e o banco persistente.
+4. O Render cria a aplicação, configura `DATABASE_URL` e gera `JWT_SECRET`. O endereço `*.onrender.com` será o link para compartilhar.
 
-Na pasta `frontend-paste/frontend`, execute:
+Não publique arquivos `.env` nem credenciais no GitHub. O `.env.example` contém apenas nomes e exemplos de variáveis.
 
-```powershell
-npm install
-npm run dev
-```
+## Migrar dados locais
 
-Abra `http://localhost:5173`.
+O PostgreSQL hospedado começa vazio. Para levar os dados locais, faça um backup com `pg_dump` e restaure-o no banco gerenciado pelo Render antes de compartilhar o site. Guarde o backup fora do repositório. Ao iniciar, a aplicação migra senhas antigas para hashes sem mudar as senhas usadas pelos tutores.
 
-## GitHub
-
-```powershell
-git init
-git add .
-git commit -m "Projeto VaciPet"
-git branch -M main
-git remote add origin LINK_DO_REPOSITORIO_DO_GITHUB
-git push -u origin main
-```
+Configure backups do banco no serviço de hospedagem. O banco local não sincroniza automaticamente com o banco publicado.

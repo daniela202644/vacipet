@@ -10,6 +10,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import SobrenosPage from './pages/SobrenosPage';
 import RecupSenhaPage from './pages/RecupSenhaPage';
+import SaudePetsPage from './pages/SaudePetsPage';
+import { getTutorSession } from './api';
 
 
 
@@ -23,7 +25,7 @@ function AppLayout() {
 }
 
 function ProtectedRoute() {
-  const tutor = localStorage.getItem('vacipet:tutor');
+  const tutor = getTutorSession();
   return tutor ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
@@ -38,12 +40,14 @@ function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/pet" element={<PetProfilePage />} />
             <Route path="/pet/:id" element={<PetProfilePage />} />
             <Route path="/receitas" element={<ReceitasPage />} />
             <Route path="/carteira" element={<CarteiraPage />} />
             <Route path="/agendamento" element={<AgendamentoPet />} />
             <Route path="/loja" element={<LojaPage />} />
             <Route path="/sobre-nos" element={<SobrenosPage />} />
+            <Route path="/saude" element={<SaudePetsPage />} />
           </Route>
 
           <Route path="/Receitas" element={<Navigate to="/receitas" replace />} />

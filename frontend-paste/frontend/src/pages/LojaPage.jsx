@@ -1,41 +1,52 @@
 
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 const LojaPage = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const [isSavedToDiet, setIsSavedToDiet] = useState(false);
+  const addToCart = (name, price) => setCartItems((items) => [...items, { name, price }]);
+  const cartTotal = cartItems.reduce((total, item) => total + item.price, 0);
+
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased min-h-screen">
-      <header className="fixed top-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(29,78,216,0.06)]">
+      <header className="hidden">
         <div className="h-20 w-full px-margin flex items-center justify-between gap-gutter">
           <div className="flex items-center gap-space-lg">
-            <a className="flex items-center gap-space-sm" data-path="inicio" href="#">
+            <Link className="flex items-center gap-space-sm" data-path="inicio" to="/">
               <img alt="Logo VaciPet" className="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1Wy0vPmCuFzUm-uHUQMy-dbZIjZGf7O8hTZbKqobrVCeuSA2c_DTwYR_Lf3dZfDrDHbVKSghbD8eauvvZEZELUh1YldGTQRx8X150hzj_vBqrbMdh_IezdbF9t2md-xq8ZlbiwqdvAgn0e05ATL9YzLZnZRgBPaJbjb33saSCdaeL-kle3L6rJeWuOxwdI30Jdqx7I3wMO74k8xjq_bNnRYsr0-Ov11sw0C5CdBx4CtHNeprGKPVx1Oe_o" />
               <div className="flex flex-col">
                 <span className="font-title-lg text-title-lg text-primary leading-none">VaciPet</span>
                 <span className="font-label-sm text-label-sm text-on-surface-variant leading-tight">Saúde &amp; Imunização</span>
               </div>
-            </a>
+            </Link>
             <div className="hidden xl:flex items-center bg-surface-container-lowest px-space-md py-space-xs rounded-lg shadow-[0_2px_8px_-2px_rgba(29,78,216,0.04)] w-64 focus-within:ring-2 focus-within:ring-primary-container">
               <span className="material-symbols-outlined text-outline text-lg mr-space-xs">search</span>
               <input className="w-full bg-transparent font-body-sm text-body-sm text-on-surface placeholder:text-outline focus:outline-none" placeholder="Buscar vacina, clínica..." type="text" />
             </div>
           </div>
           <nav className="hidden lg:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary font-title-md rounded-lg">
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Início</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Carteira do Pet</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Informações do Pet</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Agendar Consulta / Vacina</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Receitas &amp; Cuidados</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg bg-primary-container text-on-primary transition-all" href="#">Loja &amp; Promoções</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Perguntas Frequentes</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Sobre Nós</a>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/">Início</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/carteira">Carteira do Pet</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/pet">Informações do Pet</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/agendamento">Agendar Consulta / Vacina</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/receitas">Receitas &amp; Cuidados</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg bg-primary-container text-on-primary transition-all" to="/loja">Loja &amp; Promoções</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/sobre-nos">Sobre Nós</Link>
           </nav>
+          <button type="button" className="relative rounded-lg p-2 text-on-surface hover:bg-surface-container-high" aria-label={`Lista de compras: ${cartItems.length} itens`}>
+            <span className="material-symbols-outlined">shopping_cart</span>
+            {cartItems.length > 0 && <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-error px-1 text-center text-xs font-bold text-white">{cartItems.length}</span>}
+          </button>
           <div className="flex items-center gap-space-md">
             <div className="hidden md:flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-space-xs rounded-full shadow-[0_2px_8px_-2px_rgba(29,78,216,0.04)] cursor-pointer hover:bg-surface-container-low transition-colors">
               <div className="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-label-md text-label-md">P</div>
               <div className="flex flex-col text-left">
                 <div className="flex items-center gap-space-xs">
-                  <span className="font-label-md text-label-md text-on-surface">Pipoca</span>
+                  <span className="font-label-md text-label-md text-on-surface">Meu pet</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
                 </div>
-                <span className="font-label-sm text-label-sm text-tertiary">100% Imunizado</span>
+                <span className="font-label-sm text-label-sm text-tertiary">Carteira ativa</span>
               </div>
               <span className="material-symbols-outlined text-outline text-base">expand_more</span>
             </div>
@@ -51,8 +62,22 @@ const LojaPage = () => {
         </div>
       </header>
 
-      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-20rem)]">
+      <main className="w-full pt-space-lg bg-surface min-h-[calc(100vh-20rem)]">
         <div className="flex flex-col w-full">
+          {cartItems.length > 0 && (
+            <section role="status" className="mx-margin mt-space-md rounded-xl border border-primary/20 bg-surface-container-lowest p-space-md">
+              <div className="flex flex-wrap items-center justify-between gap-space-sm">
+                <div>
+                  <h2 className="font-title-md text-on-surface">Lista de compras · {cartItems.length} {cartItems.length === 1 ? 'item' : 'itens'}</h2>
+                  <p className="font-body-sm text-on-surface-variant">Total estimado: R$ {cartTotal.toFixed(2).replace('.', ',')} · pagamento online não está disponível.</p>
+                </div>
+                <button type="button" onClick={() => setCartItems([])} className="rounded-lg px-space-md py-space-sm font-label-md text-primary hover:bg-surface-container">Limpar lista</button>
+              </div>
+              <ul className="mt-space-sm flex flex-wrap gap-space-sm text-sm text-on-surface-variant">
+                {cartItems.map((item, index) => <li key={`${item.name}-${index}`}>{item.name}</li>)}
+              </ul>
+            </section>
+          )}
           {/* Dynamic Notification / Sync Ticker */}
           <div className="w-full bg-surface-container-high px-margin py-space-xs flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-space-sm">
@@ -60,8 +85,8 @@ const LojaPage = () => {
                 <span className="material-symbols-outlined text-xs">sync</span>
               </span>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Sincronizado com o prontuário de <strong className="text-on-surface font-title-sm">Pipoca</strong>: 
-                <span className="text-tertiary font-label-md">Prevenção contra ectoparasitas vence em 12 dias.</span>
+                Catálogo VaciPet <strong className="text-on-surface font-title-sm">para todos os pets</strong>:
+                <span className="text-tertiary font-label-md">Confira opções de alimentação, prevenção e higiene.</span>
               </p>
             </div>
             <div className="hidden md:flex items-center gap-space-md text-on-surface-variant font-label-sm text-label-sm">
@@ -111,11 +136,11 @@ const LojaPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-space-md pt-space-sm">
-                    <button className="px-space-xl py-3 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-lg hover:shadow-primary-container/40 hover:bg-primary transition-all flex items-center gap-space-sm" type="button">
+                    <button onClick={() => addToCart('Ração Pedigree Carne e Frango 10,1 kg', 89.99)} className="px-space-xl py-3 rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg shadow-lg hover:shadow-primary-container/40 hover:bg-primary transition-all flex items-center gap-space-sm" type="button">
                       <span className="material-symbols-outlined text-lg">shopping_cart_checkout</span> Comprar Agora
                     </button>
-                    <button className="px-space-lg py-3 rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg hover:bg-surface-variant transition-all flex items-center gap-space-xs" type="button">
-                      <span className="material-symbols-outlined text-base">bookmark_add</span> Salvar na Dieta do Pet
+                    <button onClick={() => setIsSavedToDiet((saved) => !saved)} className="px-space-lg py-3 rounded-lg bg-surface-container-high text-on-surface font-label-lg text-label-lg hover:bg-surface-variant transition-all flex items-center gap-space-xs" type="button">
+                      <span className="material-symbols-outlined text-base">{isSavedToDiet ? 'bookmark' : 'bookmark_add'}</span> {isSavedToDiet ? 'Salvo na Dieta do Pet' : 'Salvar na Dieta do Pet'}
                     </button>
                   </div>
                 </div>
@@ -170,7 +195,7 @@ const LojaPage = () => {
                   <p className="font-body-md text-body-md text-on-surface-variant">Descontos automáticos integrados à ficha clínica e histórico de vacinação do seu cão.</p>
                 </div>
                 <div className="flex items-center gap-space-sm">
-                  <span className="font-body-sm text-body-sm text-on-surface-variant">Filtrando para porte: <strong className="text-on-surface">Médio (Pipoca)</strong></span>
+                  <span className="font-body-sm text-body-sm text-on-surface-variant">Produtos de saúde e bem-estar animal</span>
                   <button className="p-2 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors" title="Modificar Filtro">
                     <span className="material-symbols-outlined text-base">tune</span>
                   </button>
@@ -181,7 +206,7 @@ const LojaPage = () => {
                 {/* Card 1 */}
                 <div className="group relative rounded-xl bg-surface-container-lowest p-space-md shadow-md hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
                   <div className="absolute -top-3 left-4 bg-tertiary-container text-on-tertiary-container px-space-sm py-1 rounded-full font-label-sm text-label-sm shadow flex items-center gap-1 z-10">
-                    <span className="material-symbols-outlined text-xs">pets</span> Recomendado para Pipoca
+                    <span className="material-symbols-outlined text-xs">pets</span> Cuidado diário
                   </div>
                   <div>
                     <div className="relative w-full h-44 rounded-lg bg-surface-container-low overflow-hidden flex items-center justify-center mt-2">
@@ -200,7 +225,7 @@ const LojaPage = () => {
                       <span className="font-title-lg text-title-lg text-error font-bold">R$ 118,06</span>
                     </div>
                     <span className="font-label-sm text-label-sm text-tertiary">Preço especial para pet vacinado</span>
-                    <button className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
+                    <button onClick={() => addToCart('NexGard Spectra 7,5 a 15kg', 118.06)} className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
                       <span className="material-symbols-outlined text-base">add_shopping_cart</span> Adicionar
                     </button>
                   </div>
@@ -225,7 +250,7 @@ const LojaPage = () => {
                       <span className="font-title-lg text-title-lg text-error font-bold">R$ 224,10</span>
                     </div>
                     <span className="font-label-sm text-label-sm text-on-surface-variant">Até 4x sem juros no cartão</span>
-                    <button className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
+                    <button onClick={() => addToCart('Bravecto Mastigável 3 Meses Cães', 224.10)} className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
                       <span className="material-symbols-outlined text-base">add_shopping_cart</span> Adicionar
                     </button>
                   </div>
@@ -250,7 +275,7 @@ const LojaPage = () => {
                       <span className="font-body-sm text-body-sm text-on-surface-variant">(4 comprimidos)</span>
                     </div>
                     <span className="font-label-sm text-label-sm text-tertiary">Dose semestral indicada</span>
-                    <button className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
+                    <button onClick={() => addToCart('Drontal Plus Cães até 10kg', 42.90)} className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
                       <span className="material-symbols-outlined text-base">add_shopping_cart</span> Adicionar
                     </button>
                   </div>
@@ -275,7 +300,7 @@ const LojaPage = () => {
                       <span className="font-title-lg text-title-lg text-error font-bold">R$ 245,90</span>
                     </div>
                     <span className="font-label-sm text-label-sm text-tertiary">Frete Grátis com Clube VaciPet</span>
-                    <button className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
+                    <button onClick={() => addToCart('PremieR Raças Específicas Golden 12kg', 245.90)} className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
                       <span className="material-symbols-outlined text-base">add_shopping_cart</span> Adicionar
                     </button>
                   </div>
@@ -300,7 +325,7 @@ const LojaPage = () => {
                       <span className="font-body-sm text-body-sm text-outline">/ frasco</span>
                     </div>
                     <span className="font-label-sm text-label-sm text-on-surface-variant">Pronta entrega em Limoeiro</span>
-                    <button className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
+                    <button onClick={() => addToCart('Shampoo Clorexidina Hipoalergênico 500ml', 38.50)} className="w-full mt-space-sm py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary shadow hover:shadow-primary-container/30 transition-all flex items-center justify-center gap-1" type="button">
                       <span className="material-symbols-outlined text-base">add_shopping_cart</span> Adicionar
                     </button>
                   </div>
@@ -315,7 +340,7 @@ const LojaPage = () => {
                   <span className="material-symbols-outlined text-4xl">local_mall</span>
                   <h2 className="font-display-sm text-[28px] leading-tight md:text-headline-lg font-bold">Clube de Assinatura VaciPet</h2>
                 </div>
-                <p className="font-body-lg text-body-lg text-primary-fixed">Receba os produtos essenciais do <strong className="text-on-primary">Pipoca</strong> todos os meses no conforto da sua casa. Garanta 15% de desconto fixo e frete grátis permanente em todas as entregas recorrentes.</p>
+                <p className="font-body-lg text-body-lg text-primary-fixed">Receba produtos essenciais para o seu pet todos os meses no conforto da sua casa. Garanta 15% de desconto fixo e frete grátis permanente em todas as entregas recorrentes.</p>
                 <div className="flex flex-col sm:flex-row gap-space-md font-label-md text-label-md mt-2">
                    <div className="flex items-center gap-2 bg-primary-fixed/20 px-3 py-1.5 rounded-lg">
                      <span className="material-symbols-outlined text-tertiary-fixed">check_circle</span> Ração nunca mais vai faltar
@@ -346,9 +371,8 @@ const LojaPage = () => {
             <span className="font-label-sm text-label-sm text-on-surface-variant">© 2026. Todos os direitos reservados.</span>
           </div>
           <div className="flex gap-space-md font-label-md text-label-md text-on-surface-variant">
-            <a href="#" className="hover:text-primary transition-colors">Termos de Uso</a>
-            <a href="#" className="hover:text-primary transition-colors">Política de Privacidade</a>
-            <a href="#" className="hover:text-primary transition-colors">Suporte</a>
+            <Link to="/sobre-nos" className="hover:text-primary transition-colors">Sobre Nós</Link>
+            <Link to="/recuperar-senha" className="hover:text-primary transition-colors">Suporte de acesso</Link>
           </div>
         </div>
       </footer>

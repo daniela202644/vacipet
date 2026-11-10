@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { loginTutor, saveTutorSession } from '../api';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -17,21 +18,11 @@ const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_URL}/tutores/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: identifier, senha: password }),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        alert(data.error || 'Não foi possível entrar.');
-        return;
-      }
-      localStorage.setItem('vacipet:tutor', JSON.stringify(data.tutor));
+      const data = await loginTutor({ email: identifier, senha: password });
+      saveTutorSession(data.tutor, data.token, remember);
       navigate('/');
-    } catch {
-      alert('Erro ao conectar com o servidor.');
+    } catch (error) {
+      alert(error.message || 'Erro ao conectar com o servidor.');
     } finally {
       setIsLoading(false);
     }

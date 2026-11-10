@@ -1,18 +1,21 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { clearTutorSession, getTutorSession } from '../api';
 
 const links = [
   { to: '/', label: 'Início', icon: 'home' },
-  { to: '/pet/1', label: 'Meu pet', icon: 'pets' },
+  { to: '/pet', label: 'Meus pets', icon: 'pets' },
   { to: '/carteira', label: 'Carteira', icon: 'vaccines' },
   { to: '/agendamento', label: 'Agendar', icon: 'calendar_month' },
   { to: '/receitas', label: 'Receitas', icon: 'restaurant' },
+  { to: '/saude', label: 'Saúde', icon: 'health_and_safety' },
   { to: '/loja', label: 'Loja', icon: 'shopping_bag' },
   { to: '/sobre-nos', label: 'Sobre nós', icon: 'info' },
-  { to: '/login', label: 'Entrar', icon: 'account_circle' },
 ];
 
 export default function GlobalNavigation() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const tutor = getTutorSession();
   const publicRoutes = ['/login', '/register', '/recuperar-senha'];
 
   if (publicRoutes.includes(pathname)) {
@@ -22,13 +25,13 @@ export default function GlobalNavigation() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="flex items-center gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-xl backdrop-blur-md"
+      className="flex items-center gap-1 overflow-x-auto rounded-xl border border-primary-fixed/70 bg-surface-container-lowest/95 p-1.5 shadow-[0_8px_28px_rgba(7,31,63,0.18)] backdrop-blur-md"
       style={{
         position: 'fixed',
         bottom: '16px',
         left: '50%',
         width: 'calc(100% - 24px)',
-        maxWidth: '680px',
+        maxWidth: '940px',
         transform: 'translateX(-50%)',
         justifyContent: 'space-between',
         zIndex: 9999,
@@ -41,8 +44,8 @@ export default function GlobalNavigation() {
           className={({ isActive }) =>
             `flex flex-1 min-w-fit items-center justify-center gap-1.5 rounded-xl px-2 py-2 text-xs font-bold transition-colors ${
               isActive
-                ? 'bg-teal-600 text-white'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-teal-700'
+                ? 'bg-primary-container text-on-primary shadow-sm'
+                : 'text-on-surface-variant hover:bg-surface-container-high hover:text-primary'
             }`
           }
         >
@@ -50,6 +53,26 @@ export default function GlobalNavigation() {
           <span className="hidden sm:inline">{label}</span>
         </NavLink>
       ))}
+      {tutor ? (
+        <button
+          type="button"
+          title="Sair da conta"
+          aria-label="Sair da conta"
+          onClick={() => {
+            clearTutorSession();
+            navigate('/login');
+          }}
+          className="flex flex-1 min-w-fit items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high hover:text-primary"
+        >
+          <span className="material-symbols-outlined text-lg">logout</span>
+          <span className="hidden sm:inline">Sair</span>
+        </button>
+      ) : (
+        <NavLink to="/login" className="flex flex-1 min-w-fit items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-bold text-on-surface-variant hover:bg-surface-container-high hover:text-primary">
+          <span className="material-symbols-outlined text-lg">account_circle</span>
+          <span className="hidden sm:inline">Entrar</span>
+        </NavLink>
+      )}
     </nav>
   );
 }

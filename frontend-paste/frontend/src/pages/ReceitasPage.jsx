@@ -41,7 +41,7 @@ const RecipesPage = () => {
       prepTime: '20 min forno',
       difficulty: 'Muito Fácil',
       servings: 'Rende 25 un',
-      highlight: 'Para Pipoca',
+      highlight: 'Petisco natural',
       benefit: 'Aprovado para Cães Sensíveis',
       benefitIcon: 'recommend',
       benefitColor: 'text-tertiary',
@@ -119,7 +119,20 @@ const RecipesPage = () => {
   ];
 
   const downloadSafetyGuide = () => {
-    alert("Iniciando download do Guia em PDF: Tabela de Alimentos Permitidos e Proibidos VaciPet...");
+    const guide = [
+      'VaciPet - Guia de alimentos para pets',
+      '',
+      'Evite oferecer chocolate, uvas, passas, cebola, alho, xilitol, bebidas alcoólicas ou ossos cozidos.',
+      'Ofereça alimentos novos somente após confirmar a segurança para a espécie e condição de saúde do animal.',
+      'Este material é informativo e não substitui orientação veterinária ou plano nutricional individual.',
+    ].join('\n');
+    const file = new Blob([guide], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(file);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'guia-alimentar-vacipet.txt';
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -180,7 +193,7 @@ const RecipesPage = () => {
                 <div className="absolute bottom-space-md left-space-md right-space-md text-on-primary flex items-center justify-between">
                   <div>
                     <span className="font-label-sm text-label-sm text-tertiary-fixed block">100% IN NATURA</span>
-                    <span className="font-title-md text-title-md font-bold">Pipoca adora abóbora!</span>
+                    <span className="font-title-md text-title-md font-bold">Ingredientes naturais para o dia a dia</span>
                   </div>
                   <span className="px-space-sm py-1 rounded-full bg-surface/90 text-primary font-label-sm text-label-sm font-bold">Protocolo Seguro</span>
                 </div>
@@ -234,7 +247,7 @@ const RecipesPage = () => {
               className="shrink-0 px-space-lg py-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-lg text-label-lg transition-all flex items-center gap-space-xs shadow-sm"
             >
               <span className="material-symbols-outlined text-lg">download</span>
-              <span>Baixar Tabela de Alimentos Permitidos e Proibidos (PDF)</span>
+              <span>Baixar guia alimentar (.txt)</span>
             </button>
           </div>
 

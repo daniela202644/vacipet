@@ -1,30 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const ForgotPasswordPage = () => {
   const [method, setMethod] = useState('email'); // 'email' | 'whatsapp'
   const [identifier, setIdentifier] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [countdown, setCountdown] = useState(59);
-  const [canResend, setCanResend] = useState(false);
-
-  // Gestão do contador de reenvio
-  useEffect(() => {
-    let timer;
-    if (isSubmitted && countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            setCanResend(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [isSubmitted, countdown]);
-
   // Alternar método de envio (E-mail / WhatsApp)
   const handleSwitchMethod = (newMethod) => {
     if (newMethod === method) return;
@@ -35,14 +15,7 @@ const ForgotPasswordPage = () => {
   // Submissão do formulário
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setCanResend(false);
-
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsSubmitted(true);
-      setCountdown(59);
-    }, 1200);
+    setIsSubmitted(true);
   };
 
   // Textos dinâmicos baseados no método escolhido
@@ -52,13 +25,11 @@ const ForgotPasswordPage = () => {
   const inputIcon = isEmail ? 'alternate_email' : 'smartphone';
   const helperText = isEmail
     ? 'Digite o e-mail verificado da sua carteira ou os 11 dígitos do seu CPF.'
-    : 'Enviaremos um código de autenticação rápida de 6 dígitos via WhatsApp ou SMS.';
+    : 'Informe o número com DDD cadastrado na sua conta.';
 
   const getButtonText = () => {
-    if (isLoading) return 'Validando solicitação...';
-    if (isSubmitted && !canResend) return 'Solicitação Enviada';
-    if (isSubmitted && canResend) return isEmail ? 'Reenviar Instruções' : 'Reenviar Código';
-    return isEmail ? 'Enviar Instruções de Recuperação' : 'Enviar Código por WhatsApp';
+    if (isSubmitted) return 'Recuperação indisponível';
+    return 'Verificar opções de recuperação';
   };
 
   return (
@@ -69,13 +40,13 @@ const ForgotPasswordPage = () => {
             
             {/* Link de Retorno */}
             <div className="mb-space-lg">
-              <a 
+              <Link
                 className="inline-flex items-center gap-space-xs text-on-surface-variant hover:text-primary transition-colors font-label-lg text-label-lg group" 
-                href="/login"
+                to="/login"
               >
                 <span className="material-symbols-outlined text-[20px] transition-transform group-hover:-translate-x-1">arrow_back</span>
                 <span>Voltar para o Login</span>
-              </a>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
@@ -100,7 +71,7 @@ const ForgotPasswordPage = () => {
                 </div>
 
                 <p className="font-body-md text-body-md text-on-surface-variant mb-space-lg">
-                  Informe o e-mail ou CPF cadastrado no VaciPet. Enviaremos um link de redefinição imediato ou código via WhatsApp para você redefinir sua senha com segurança.
+                  A recuperação automática por e-mail ou WhatsApp ainda não está configurada neste ambiente.
                 </p>
 
                 {/* Tabs de Seleção de Método */}
@@ -163,19 +134,17 @@ const ForgotPasswordPage = () => {
                   <div className="p-space-md bg-surface-container-low rounded-lg flex items-start gap-space-sm">
                     <span className="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">verified_user</span>
                     <div className="font-body-sm text-body-sm text-on-surface-variant">
-                      Por medidas sanitárias de segurança, o link ou código enviado terá validade de <strong>15 minutos</strong>.
+                      Nenhuma mensagem será enviada até que um provedor de e-mail ou SMS seja configurado no servidor.
                     </div>
                   </div>
 
                   {/* Botão de Envio */}
                   <button
                     type="submit"
-                    disabled={isLoading || (isSubmitted && !canResend)}
+                    disabled={isSubmitted}
                     className="w-full py-3.5 px-space-lg rounded-lg bg-primary-container text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-space-sm shadow-md hover:shadow-xl transition-all duration-200 hover:scale-[1.005] active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed disabled:hover:scale-100"
                   >
-                    {isLoading ? (
-                      <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
-                    ) : isSubmitted && !canResend ? (
+                    {isSubmitted ? (
                       <span className="material-symbols-outlined text-[20px]">check</span>
                     ) : (
                       <span className="material-symbols-outlined text-[20px]">send</span>
@@ -186,24 +155,9 @@ const ForgotPasswordPage = () => {
 
                 {/* Painel de Feedback / Confirmação */}
                 {isSubmitted && (
-                  <div className="mt-space-lg p-space-md bg-surface-container rounded-lg animate-fade-in">
-                    <div className="flex items-center gap-space-xs text-tertiary font-title-md text-title-md mb-1">
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                      <span>Instruções Enviadas!</span>
-                    </div>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mb-space-sm">
-                      Se existir uma conta correspondente no VaciPet, você receberá a validação em instantes.
-                    </p>
-                    <div className="flex items-center gap-space-xs font-label-md text-label-md text-outline">
-                      <span className="material-symbols-outlined text-[16px]">timer</span>
-                      {canResend ? (
-                        <span className="text-tertiary font-semibold">Você já pode solicitar um novo envio!</span>
-                      ) : (
-                        <span>
-                          Solicitar novo envio em: <strong className="text-primary font-bold">{countdown}s</strong>
-                        </span>
-                      )}
-                    </div>
+                  <div role="status" className="mt-space-lg rounded-lg border border-amber-300 bg-amber-50 p-space-md">
+                    <p className="font-title-md text-title-md font-bold text-amber-900">Nenhum link ou código foi enviado.</p>
+                    <p className="mt-1 font-body-sm text-body-sm text-amber-900">Configure um provedor de e-mail ou SMS no servidor para habilitar a recuperação segura.</p>
                   </div>
                 )}
 
@@ -211,9 +165,9 @@ const ForgotPasswordPage = () => {
                 <div className="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-md">
                   <div className="font-body-sm text-body-sm text-on-surface-variant text-center sm:text-left">
                     Lembrou sua senha?
-                    <a className="font-label-md text-label-md text-primary font-bold hover:underline ml-1" href="/login">
+                    <Link className="font-label-md text-label-md text-primary font-bold hover:underline ml-1" to="/login">
                       Fazer Login
-                    </a>
+                    </Link>
                   </div>
                   <a className="font-body-sm text-body-sm text-outline hover:text-on-surface text-center" href="#faq">
                     Dúvidas frequentes

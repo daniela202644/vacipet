@@ -1,294 +1,148 @@
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import { createPet, getPets, getTutorSession } from '../api';
 
-const PetProfilePage = () => {
+const emptyPet = { nome: '', especie: 'Cão', raca: '', idade: '', peso: '' };
+
+export default function PetProfilePage() {
+  const tutor = getTutorSession();
+  const { id } = useParams();
+  const [pets, setPets] = useState([]);
+  const [petForm, setPetForm] = useState(emptyPet);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    getPets(tutor.id)
+      .then((data) => {
+        if (active) setPets(data);
+      })
+      .catch((requestError) => {
+        if (active) setError(requestError.message);
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => { active = false; };
+  }, [tutor.id]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setIsSaving(true);
+    try {
+      const pet = await createPet({
+        tutor_id: tutor.id,
+        ...petForm,
+        peso: petForm.peso || null,
+      });
+      setPets((current) => [pet, ...current]);
+      setPetForm(emptyPet);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const selectedPet = pets.find((pet) => String(pet.id) === id) || pets[0];
+
   return (
-    <div className="w-full bg-surface min-h-screen pb-12 font-sans text-on-surface">
-      
-      {/* BARRA SUPERIOR DE INFORMAÇÃO / SUB-HEADER */}
-      <div className="bg-surface-container-low border-b border-outline/10 px-margin py-2 text-xs text-on-surface-variant flex flex-wrap justify-between items-center gap-2">
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-base text-primary">verified_user</span>
-          <span>Prontuário Oficial VaciPet • Sistema Homologado MAPA/CFMV sob Portaria Sanitária Vigente</span>
+    <main className="min-h-screen bg-surface px-4 pb-28 pt-8 sm:px-6">
+      <header className="relative mx-auto mb-8 w-full max-w-6xl overflow-hidden rounded-xl bg-primary px-6 py-7 text-white shadow-lg sm:px-9 sm:py-9">
+        <div className="absolute inset-y-0 right-0 hidden w-[40%] lg:block">
+          <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=900&q=85" alt="Cão recebendo cuidados veterinários" className="h-full w-full object-cover object-center opacity-70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/70 to-transparent" />
         </div>
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-tertiary"></span> Nuvem Criptografada
-          </span>
-          <span>Limoeiro - PE e Rede Conectada</span>
+        <div className="relative z-10 max-w-3xl">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase text-tertiary-fixed"><span className="material-symbols-outlined text-sm">pets</span> Perfil familiar</span>
+          <h1 className="mt-4 text-3xl font-extrabold sm:text-4xl">Seus pets, em primeiro lugar</h1>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">Cadastre os animais da família e mantenha os dados de cada um organizados.</p>
+          <p className="mt-5 text-sm text-white/70">Tutor responsável <strong className="text-white">{tutor.nome}</strong><span className="mx-2 text-white/30">·</span><strong className="text-tertiary-fixed">{pets.length}</strong> {pets.length === 1 ? 'pet cadastrado' : 'pets cadastrados'}</p>
         </div>
+      </header>
+
+      {error && <p role="alert" className="mx-auto mb-5 max-w-6xl rounded-lg border border-error/30 bg-error-container/40 px-4 py-3 text-sm text-error">{error}</p>}
+
+      <div className="mx-auto grid w-full max-w-6xl items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
+        <section className="space-y-4" aria-labelledby="pet-list-title">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3"><span className="material-symbols-outlined text-2xl text-primary">pets</span><h2 id="pet-list-title" className="text-xl font-bold text-on-surface">Animais cadastrados</h2></div>
+            <span className="rounded-full bg-secondary-fixed px-3 py-1 text-sm font-bold text-primary">{pets.length} {pets.length === 1 ? 'pet' : 'pets'}</span>
+          </div>
+          {isLoading ? <p className="text-on-surface-variant">Carregando seus pets...</p> : pets.length === 0 ? (
+            <div className="rounded-xl border border-primary-fixed bg-surface-container-lowest p-6 shadow-sm">
+              <span className="material-symbols-outlined text-3xl text-primary">pets</span>
+              <p className="mt-2 text-on-surface-variant">Você ainda não cadastrou nenhum pet. Use o formulário para começar.</p>
+            </div>
+          ) : pets.map((pet) => (
+            <Link
+              key={pet.id}
+              to={`/pet/${pet.id}`}
+              className={`group block overflow-hidden rounded-xl border bg-surface-container-lowest shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg ${String(selectedPet?.id) === String(pet.id) ? 'border-primary ring-2 ring-primary-fixed' : 'border-primary-fixed'}`}
+            >
+              <div className="flex items-center justify-between gap-4 bg-surface-container-low px-5 py-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary-container text-tertiary-fixed"><span className="material-symbols-outlined text-2xl">{pet.especie === 'Gato' ? 'cruelty_free' : 'pets'}</span></span>
+                  <div className="min-w-0"><h3 className="truncate text-lg font-bold text-on-surface">{pet.nome}</h3><p className="mt-0.5 truncate text-sm text-on-surface-variant">{[pet.especie, pet.raca].filter(Boolean).join(' · ')}</p></div>
+                </div>
+                <span className="material-symbols-outlined text-primary transition-transform group-hover:translate-x-1" aria-hidden="true">arrow_forward</span>
+              </div>
+              <div className="flex flex-wrap gap-x-6 gap-y-2 px-5 py-4 text-sm text-on-surface-variant">
+                {pet.idade && <span><strong className="text-on-surface">Idade:</strong> {pet.idade} anos</span>}
+                {pet.peso && <span><strong className="text-on-surface">Peso:</strong> {pet.peso} kg</span>}
+                <span className="font-bold text-primary">Abrir prontuário e carteira</span>
+              </div>
+            </Link>
+          ))}
+          {selectedPet && (
+            <div className="rounded-xl bg-primary p-5 text-white shadow-md">
+              <p className="text-xs font-bold uppercase text-tertiary-fixed">Pet selecionado</p>
+              <h2 className="mt-1 text-2xl font-extrabold">{selectedPet.nome}</h2>
+              <p className="mt-1 text-sm text-white/75">{selectedPet.especie}{selectedPet.raca ? ` · ${selectedPet.raca}` : ''}</p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <Link to="/carteira" className="rounded-lg bg-white px-4 py-2 text-sm font-bold text-teal-900">Carteira de vacinas</Link>
+                <Link to="/agendamento" className="rounded-lg border border-white/40 px-4 py-2 text-sm font-bold text-white">Agendar atendimento</Link>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="overflow-hidden rounded-xl border border-primary-fixed bg-surface-container-lowest shadow-md" aria-labelledby="new-pet-title">
+          <div className="bg-surface-container-low px-6 py-5"><p className="text-xs font-bold uppercase text-primary">Novo prontuário</p><h2 id="new-pet-title" className="mt-1 text-xl font-bold text-on-surface">Cadastrar pet</h2></div>
+          <div className="p-6">
+          <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+            <label className="block text-sm font-semibold text-slate-700">Nome
+              <input required maxLength="255" value={petForm.nome} onChange={(event) => setPetForm({ ...petForm, nome: event.target.value })} className="mt-1 w-full rounded-lg border border-outline/30 bg-surface-container-lowest px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-fixed" />
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-sm font-semibold text-slate-700">Espécie
+                <select value={petForm.especie} onChange={(event) => setPetForm({ ...petForm, especie: event.target.value })} className="mt-1 w-full rounded-lg border border-outline/30 bg-surface-container-lowest px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-fixed">
+                  <option>Cão</option><option>Gato</option><option>Outro</option>
+                </select>
+              </label>
+              <label className="block text-sm font-semibold text-slate-700">Raça
+                <input maxLength="120" value={petForm.raca} onChange={(event) => setPetForm({ ...petForm, raca: event.target.value })} className="mt-1 w-full rounded-lg border border-outline/30 bg-surface-container-lowest px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-fixed" />
+              </label>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-sm font-semibold text-slate-700">Idade (anos)
+                <input type="number" min="0" max="100" value={petForm.idade} onChange={(event) => setPetForm({ ...petForm, idade: event.target.value })} className="mt-1 w-full rounded-lg border border-outline/30 bg-surface-container-lowest px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-fixed" />
+              </label>
+              <label className="block text-sm font-semibold text-slate-700">Peso (kg)
+                <input type="number" min="0" step="0.01" value={petForm.peso} onChange={(event) => setPetForm({ ...petForm, peso: event.target.value })} className="mt-1 w-full rounded-lg border border-outline/30 bg-surface-container-lowest px-3 py-2.5 text-on-surface focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary-fixed" />
+              </label>
+            </div>
+            <button type="submit" disabled={isSaving} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary-container px-4 py-3 font-bold text-on-primary shadow-sm transition hover:bg-primary disabled:opacity-60">
+              <span className="material-symbols-outlined">{isSaving ? 'progress_activity' : 'add'}</span>
+              {isSaving ? 'Salvando...' : 'Salvar pet'}
+            </button>
+          </form>
+          </div>
+        </section>
       </div>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-        
-        {/* TÍTULO E SUBTÍTULO */}
-        <div className="mb-6">
-          <span className="text-xs font-bold text-primary uppercase tracking-wider">
-            Gestão de Prontuário & Tutores / Informações do Pet & Tutor
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-on-surface mt-1">
-            Informações do Pet & Tutor
-          </h1>
-          <p className="text-sm text-on-surface-variant mt-1">
-            Vincule o responsável legal ao prontuário médico e crie a carteira de vacinação digital oficial do seu animal com garantia de conformidade epidemiológica.
-          </p>
-        </div>
-
-        {/* STEPPER DE ETAPAS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-container-lowest border-2 border-primary shadow-sm">
-            <div className="w-8 h-8 rounded-full bg-primary text-on-primary font-bold flex items-center justify-center text-sm shrink-0">1</div>
-            <div className="flex flex-col">
-              <span className="text-xs font-extrabold text-primary uppercase">Etapa 1</span>
-              <span className="text-sm font-bold text-on-surface">Tutor Legal</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low opacity-80">
-            <div className="w-8 h-8 rounded-full bg-primary-container text-on-primary font-bold flex items-center justify-center text-sm shrink-0">2</div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-outline uppercase">Etapa 2</span>
-              <span className="text-sm font-bold text-on-surface">Identificação Pet</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low opacity-60">
-            <div className="w-8 h-8 rounded-full bg-outline/20 text-outline font-bold flex items-center justify-center text-sm shrink-0">3</div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-outline uppercase">Etapa 3</span>
-              <span className="text-sm font-bold text-on-surface">Saúde & Alergias</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low opacity-60">
-            <div className="w-8 h-8 rounded-full bg-outline/20 text-outline font-bold flex items-center justify-center text-sm shrink-0">4</div>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-outline uppercase">Etapa 4</span>
-              <span className="text-sm font-bold text-on-surface">Emissão Digital</span>
-            </div>
-          </div>
-        </div>
-
-        {/* CONTEÚDO PRINCIPAL (FORMULÁRIO + PREVIEW CARD) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* COLUNA ESQUERDA: FORMULÁRIO (7 Colunas) */}
-          <div className="lg:col-span-7 bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline/10 space-y-6">
-            
-            {/* CABEÇALHO DA SEÇÃO */}
-            <div className="flex items-center justify-between pb-4 border-b border-outline/10">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-                  <span className="material-symbols-outlined text-xl">badge</span>
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-on-surface">1. Dados Pessoais do Tutor</h2>
-                  <p className="text-xs text-on-surface-variant">Responsável civil e legal pelos protocolos sanitários e notificações zoonóticas.</p>
-                </div>
-              </div>
-              <span className="text-xs font-bold text-primary bg-primary-fixed/50 px-2 py-0.5 rounded-md">* Obrigatório p/ CVI</span>
-            </div>
-
-            {/* FORMULÁRIO */}
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-              <div>
-                <label className="block text-xs font-bold text-on-surface mb-1">Nome Completo do Tutor *</label>
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">person</span>
-                  <input 
-                    type="text" 
-                    defaultValue="Daniela Cavalcanti Rios" 
-                    className="w-full pl-9 pr-3 py-2 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium focus:outline-none focus:border-primary" 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">CPF (Cadastro de Pessoa Física) *</label>
-                  <div className="relative">
-                    <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">id_card</span>
-                    <input 
-                      type="text" 
-                      defaultValue="094.882.174-50" 
-                      className="w-full pl-9 pr-3 py-2 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium focus:outline-none focus:border-primary" 
-                    />
-                  </div>
-                  <span className="text-[10px] text-outline mt-0.5 block">Necessário para Passaporte Sanitário e CVI</span>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">Data de Nascimento *</label>
-                  <input 
-                    type="date" 
-                    defaultValue="1989-11-22" 
-                    className="w-full px-3 py-2 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium focus:outline-none focus:border-primary" 
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">WhatsApp / Celular de Notificação *</label>
-                  <div className="relative">
-                    <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">call</span>
-                    <input 
-                      type="text" 
-                      defaultValue="(81) 99712-1088" 
-                      className="w-full pl-9 pr-3 py-2 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium focus:outline-none focus:border-primary" 
-                    />
-                  </div>
-                  <span className="text-[10px] text-tertiary font-medium mt-0.5 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[12px]">check_circle</span> Receberá alertas automáticos de vencimento
-                  </span>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-on-surface mb-1">E-mail Principal de Acesso *</label>
-                  <div className="relative">
-                    <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-lg">mail</span>
-                    <input 
-                      type="email" 
-                      defaultValue="daniela.rios@vaci-pet.com.br" 
-                      className="w-full pl-9 pr-3 py-2 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium focus:outline-none focus:border-primary" 
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* SEÇÃO ENDEREÇO */}
-              <div className="pt-2">
-                <h3 className="text-xs font-bold text-on-surface flex items-center gap-1 mb-3">
-                  <span className="material-symbols-outlined text-base text-primary">location_on</span> Endereço de Residência do Pet
-                </h3>
-                
-                <div className="grid grid-cols-12 gap-3">
-                  <div className="col-span-12 sm:col-span-5">
-                    <label className="block text-[11px] font-bold text-on-surface mb-1">CEP (Limoeiro / Região)</label>
-                    <div className="flex gap-2">
-                      <input type="text" defaultValue="55700-000" className="w-full px-3 py-1.5 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium" />
-                      <button type="button" className="px-3 py-1.5 bg-surface-container-high text-primary font-bold text-xs rounded-lg hover:bg-primary-fixed transition-colors">Buscar</button>
-                    </div>
-                  </div>
-
-                  <div className="col-span-12 sm:col-span-5">
-                    <label className="block text-[11px] font-bold text-on-surface mb-1">Rua / Logradouro</label>
-                    <input type="text" defaultValue="Avenida Severino Pinheiro" className="w-full px-3 py-1.5 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium" />
-                  </div>
-
-                  <div className="col-span-12 sm:col-span-2">
-                    <label className="block text-[11px] font-bold text-on-surface mb-1">Número</label>
-                    <input type="text" defaultValue="340" className="w-full px-3 py-1.5 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-12 gap-3 mt-3">
-                  <div className="col-span-12 sm:col-span-5">
-                    <label className="block text-[11px] font-bold text-on-surface mb-1">Complemento / Ref.</label>
-                    <input type="text" defaultValue="Apto 402 - Edif. Solar das Palmeiras" className="w-full px-3 py-1.5 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium" />
-                  </div>
-
-                  <div className="col-span-12 sm:col-span-4">
-                    <label className="block text-[11px] font-bold text-on-surface mb-1">Bairro</label>
-                    <input type="text" defaultValue="Centro" className="w-full px-3 py-1.5 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium" />
-                  </div>
-
-                  <div className="col-span-12 sm:col-span-3">
-                    <label className="block text-[11px] font-bold text-on-surface mb-1">Cidade / UF</label>
-                    <input type="text" defaultValue="Limoeiro - PE" className="w-full px-3 py-1.5 bg-surface-container-low border border-outline/20 rounded-lg text-sm text-on-surface font-medium opacity-75" disabled />
-                  </div>
-                </div>
-              </div>
-
-              {/* AUTORIZAÇÃO */}
-              <div className="p-3 rounded-xl bg-surface-container-low/70 border border-outline/10 mt-4 flex items-start gap-2">
-                <input type="checkbox" id="auth" defaultChecked className="mt-1 rounded text-primary focus:ring-primary cursor-pointer" />
-                <label htmlFor="auth" className="text-xs text-on-surface-variant leading-tight cursor-pointer">
-                  Autorizo a equipe veterinária VaciPet e o Centro de Vigilância e Zoonoses de Limoeiro-PE a emitir avisos de campanhas municipais públicas (Raiva Animal, Leishmaniose e castração pública) para meu contato.
-                </label>
-              </div>
-
-            </form>
-          </div>
-
-          {/* COLUNA DIREITA: PREVIEW DA CARTEIRA DIGITAL (5 Colunas) */}
-          <div className="lg:col-span-5 space-y-6">
-            
-            {/* CARD AZUL DA CARTEIRA */}
-            <div className="bg-gradient-to-br from-primary to-primary-container rounded-2xl p-6 text-on-primary shadow-lg relative overflow-hidden">
-              <div className="flex items-center justify-between border-b border-on-primary/20 pb-3 mb-4">
-                <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary-fixed">Carteira Digital VaciPet</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest bg-on-primary/20 px-2 py-0.5 rounded">Emissão Oficial</span>
-              </div>
-
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-2xl font-black tracking-tight leading-none">Pipoca</h3>
-                  <p className="text-xs text-primary-fixed mt-1 font-medium">Canis lupus familiaris • Cão</p>
-                </div>
-                <div className="w-12 h-12 rounded-xl bg-on-primary/20 border border-on-primary/30 flex items-center justify-center font-bold text-lg">
-                  VP
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 mt-4 pt-4 border-t border-on-primary/10">
-                <div className="w-16 h-16 rounded-xl bg-on-primary/20 border-2 border-on-primary/30 flex items-center justify-center overflow-hidden shrink-0">
-                  <span className="material-symbols-outlined text-3xl text-on-primary">pets</span>
-                </div>
-                <div className="text-xs space-y-1 text-primary-fixed">
-                  <p><strong className="text-on-primary">Raça:</strong> Jack Russell</p>
-                  <p><strong className="text-on-primary">Idade:</strong> 3 anos e 4m</p>
-                  <p><strong className="text-on-primary">Peso:</strong> 26.4 kg (Médio)</p>
-                  <p><strong className="text-on-primary">Microchip:</strong> #982.000.112.441</p>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-3 border-t border-on-primary/10 flex items-center justify-between text-[11px] text-primary-fixed">
-                <span className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-sm text-tertiary-fixed">verified</span>
-                  Homologação MAPA/CFMV
-                </span>
-                <span className="material-symbols-outlined text-xl">qr_code_2</span>
-              </div>
-
-              <div className="mt-3 p-2 rounded-lg bg-on-primary/10 text-[11px] flex justify-between items-center">
-                <span>Protocolo V8/V10 & Reforços</span>
-                <span className="font-bold text-tertiary-fixed">1 Dose Agendada</span>
-              </div>
-            </div>
-
-            <p className="text-center text-xs text-outline font-medium">Visualização preliminar em tempo real</p>
-
-            {/* BENEFÍCIOS ATIVOS */}
-            <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline/10 shadow-sm space-y-3">
-              <h4 className="text-xs font-bold text-on-surface uppercase tracking-wider flex items-center gap-1">
-                <span className="material-symbols-outlined text-primary text-base">verified</span> Benefícios Ativos do Cadastro
-              </h4>
-              
-              <ul className="text-xs text-on-surface-variant space-y-2.5">
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-tertiary text-base shrink-0">check_circle</span>
-                  <span><strong>Alertas automáticos via WhatsApp</strong> com 15 dias de antecedência do vencimento</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-tertiary text-base shrink-0">check_circle</span>
-                  <span><strong>Acesso prioritário</strong> em mutirões municipais de imunização pública de Limoeiro</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-tertiary text-base shrink-0">check_circle</span>
-                  <span><strong>Certificado infalsificável</strong> aceito em voos Gol, Latam, Azul e hotéis pet friendly</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="material-symbols-outlined text-tertiary text-base shrink-0">check_circle</span>
-                  <span><strong>Segurança LGPD</strong> e sigilo veterinário garantido por criptografia clínica</span>
-                </li>
-              </ul>
-            </div>
-
-          </div>
-
-        </div>
-      </main>
-    </div>
+    </main>
   );
-};
-
-export default PetProfilePage;
+}

@@ -1,12 +1,14 @@
 
+import { Link } from 'react-router-dom';
+
 const SobrenosPage = () => {
   return (
     <div className="bg-surface font-body-md text-on-surface antialiased">
       {/* Header / Navegação */}
-      <header className="fixed top-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(29,78,216,0.06)]">
+      <header className="hidden">
         <div className="h-20 w-full px-margin flex items-center justify-between gap-gutter">
           <div className="flex items-center gap-space-lg">
-            <a className="flex items-center gap-space-sm" href="#">
+            <Link className="flex items-center gap-space-sm" to="/">
               <img 
                 alt="Logo VaciPet" 
                 className="h-8 w-auto object-contain" 
@@ -16,7 +18,7 @@ const SobrenosPage = () => {
                 <span className="font-title-lg text-title-lg text-primary leading-none">VaciPet</span>
                 <span className="font-label-sm text-label-sm text-on-surface-variant leading-tight">Saúde &amp; Imunização</span>
               </div>
-            </a>
+            </Link>
             <div className="hidden xl:flex items-center bg-surface-container-lowest px-space-md py-space-xs rounded-lg shadow-[0_2px_8px_-2px_rgba(29,78,216,0.04)] w-64 focus-within:ring-2 focus-within:ring-primary-container">
               <span className="material-symbols-outlined text-outline text-lg mr-space-xs">search</span>
               <input 
@@ -27,14 +29,13 @@ const SobrenosPage = () => {
             </div>
           </div>
           <nav className="hidden lg:flex items-center gap-space-xs">
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Início</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Carteira do Pet</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Informações do Pet</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Agendar Consulta / Vacina</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Receitas &amp; Cuidados</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Loja &amp; Promoções</a>
-            <a className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" href="#">Perguntas Frequentes</a>
-            <a className="bg-primary-container text-on-primary font-title-md px-space-md py-space-sm rounded-lg font-label-lg text-label-lg transition-all" href="#">Sobre Nós</a>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/">Início</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/carteira">Carteira do Pet</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/pet">Informações do Pet</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/agendamento">Agendar Consulta / Vacina</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/receitas">Receitas &amp; Cuidados</Link>
+            <Link className="px-space-md py-space-sm rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" to="/loja">Loja &amp; Promoções</Link>
+            <Link className="bg-primary-container text-on-primary font-title-md px-space-md py-space-sm rounded-lg font-label-lg text-label-lg transition-all" to="/sobre-nos">Sobre Nós</Link>
           </nav>
           <div className="flex items-center gap-space-md">
             <div className="hidden md:flex items-center gap-space-sm bg-surface-container-lowest px-space-md py-space-xs rounded-full shadow-[0_2px_8px_-2px_rgba(29,78,216,0.04)] cursor-pointer hover:bg-surface-container-low transition-colors">
@@ -65,7 +66,7 @@ const SobrenosPage = () => {
       </header>
 
       {/* Main Content */}
-      <main className="w-full pt-20 bg-surface min-h-[calc(100vh-20rem)]">
+      <main className="w-full pt-space-lg bg-surface min-h-[calc(100vh-20rem)]">
         <div className="flex flex-col w-full">
           
           {/* Section 1: Hero */}
@@ -91,10 +92,10 @@ const SobrenosPage = () => {
                     O que nasceu como um projeto de puro amor aos animais transformou-se na plataforma de vigilância vacinal mais prática, rastreável e confiável do país. Unimos tutores cuidadosos, médicos veterinários e secretarias municipais de saúde em torno de um único propósito: erradicar zoonoses preveníveis através da imunização pontual.
                   </p>
                   <div className="flex flex-wrap items-center gap-space-md pt-space-sm">
-                    <a className="px-space-lg py-space-sm bg-error text-on-error font-label-lg text-label-lg rounded-lg shadow-md hover:shadow-lg hover:bg-error/95 transition-all flex items-center gap-space-xs" href="#">
+                    <Link className="px-space-lg py-space-sm bg-error text-on-error font-label-lg text-label-lg rounded-lg shadow-md hover:shadow-lg hover:bg-error/95 transition-all flex items-center gap-space-xs" to="/pet">
                       <span className="material-symbols-outlined text-xl">app_registration</span>
                       Cadastrar Meu Pet Gratuitamente
-                    </a>
+                    </Link>
                     <a className="px-space-md py-space-sm bg-surface-container-lowest text-primary font-label-lg text-label-lg rounded-lg shadow-sm hover:bg-surface-container-high transition-all flex items-center gap-space-xs" href="#valores">
                       <span className="material-symbols-outlined text-xl">account_tree</span>
                       Nossos Pilares de Atuação

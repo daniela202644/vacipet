@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { registerTutor } from '../api';
 //modificar o register e o login!!!!!11!!!!1!!!1!!1!!11!1!!1
 const RegisterPage = () => {
   // 1. ESTADOS
@@ -115,27 +116,17 @@ const RegisterPage = () => {
 
     setIsLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_URL}/tutores/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nome: formData.fullName,
-          email: formData.email,
-          senha: formData.password,
-          telefone: formData.whatsapp,
-          cpf: formData.cpf,
-        }),
+      await registerTutor({
+        nome: formData.fullName,
+        email: formData.email,
+        senha: formData.password,
+        telefone: formData.whatsapp,
+        cpf: formData.cpf,
       });
-      const data = await response.json();
-      if (!response.ok) {
-        alert(data.error || 'Erro ao criar conta.');
-        return;
-      }
       alert('Conta criada com sucesso!');
       navigate('/login');
-    } catch {
-      alert('Erro ao conectar com o servidor Node.js.');
+    } catch (error) {
+      alert(error.message || 'Erro ao conectar com o servidor Node.js.');
     } finally {
       setIsLoading(false);
     }
