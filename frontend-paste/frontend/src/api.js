@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.API_URL?.replace(/\/$/, '')
+const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '')
   || (import.meta.env.DEV ? 'https://backend-paste.onrender.com' : '');
 const IS_GITHUB_PAGES_DEMO = import.meta.env.PROD && !import.meta.env.VITE_API_URL;
 const DEMO_DATA_KEY = 'vacipet:github-pages-demo';
