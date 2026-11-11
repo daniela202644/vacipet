@@ -11,7 +11,7 @@ const links = [
   { to: '/saude', label: 'Saúde', icon: 'health_and_safety' },
   { to: '/loja', label: 'Loja', icon: 'shopping_bag' },
   { to: '/sobre-nos', label: 'Sobre nós', icon: 'info' },
-].filter(({ to }) => !isStaticPagesBuild || ['/', '/receitas', '/saude', '/loja', '/sobre-nos'].includes(to));
+];
 
 export default function GlobalNavigation() {
   const { pathname } = useLocation();
@@ -54,7 +54,7 @@ export default function GlobalNavigation() {
           <span className="hidden sm:inline">{label}</span>
         </NavLink>
       ))}
-      {tutor ? (
+      {tutor && !isStaticPagesBuild ? (
         <button
           type="button"
           title="Sair da conta"

@@ -19,6 +19,11 @@ const isGithubPagesBuild = import.meta.env.PROD && !import.meta.env.VITE_API_URL
 function AppLayout() {
   return (
     <>
+      {isGithubPagesBuild && (
+        <div role="note" className="bg-amber-100 px-4 py-2 text-center text-xs font-semibold text-amber-950">
+          Modo demonstração: use dados fictícios. Alterações ficam salvas apenas neste navegador e não são enviadas a um servidor.
+        </div>
+      )}
       <Outlet />
       <GlobalNavigation />
     </>
@@ -41,7 +46,11 @@ function App() {
 
           {isGithubPagesBuild ? (
             <>
-              <Route path="/" element={<SobrenosPage />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/pet" element={<PetProfilePage />} />
+              <Route path="/pet/:id" element={<PetProfilePage />} />
+              <Route path="/carteira" element={<CarteiraPage />} />
+              <Route path="/agendamento" element={<AgendamentoPet />} />
               <Route path="/receitas" element={<ReceitasPage />} />
               <Route path="/loja" element={<LojaPage />} />
               <Route path="/sobre-nos" element={<SobrenosPage />} />

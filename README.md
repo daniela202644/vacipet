@@ -24,9 +24,9 @@ Não publique arquivos `.env` nem credenciais no GitHub. O `.env.example` conté
 
 ### GitHub Pages
 
-O workflow `.github/workflows/pages.yml` publica automaticamente uma versão informativa em `https://daniela202644.github.io/vacipet/` quando há push para `main`. No repositório, abra **Settings > Pages** e selecione **GitHub Actions** como fonte se ainda não estiver configurada.
+O workflow `.github/workflows/pages.yml` publica automaticamente a demonstração em `https://daniela202644.github.io/vacipet/` quando há push para `main`. No repositório, a fonte do Pages deve ser **GitHub Actions**.
 
-GitHub Pages não executa Express nem PostgreSQL. Sem uma variável `VITE_API_URL`, a página publica as seções informativas; login, cadastro, agenda e dados pessoais precisam do backend hospedado descrito acima. Para ativá-los, configure `VITE_API_URL` como variável de repositório apontando para a API e permita essa origem no `FRONTEND_URL` do backend.
+GitHub Pages não executa Express nem PostgreSQL. A demonstração inclui pets, carteira e agendamentos de exemplo; as alterações são guardadas somente no `localStorage` do navegador atual e não são sincronizadas. Não use dados pessoais reais. Para contas e dados compartilhados, configure `VITE_API_URL` para uma API hospedada e permita a origem no `FRONTEND_URL` do backend.
 
 ## Migrar dados locais
 
