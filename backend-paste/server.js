@@ -374,16 +374,16 @@ app.post('/agendamentos', async (req, res) => {
   }
 });
 
-const frontendDirectory = path.join(__dirname, '..', 'frontend-paste', 'frontend', 'dist');
-app.use(express.static(frontendDirectory));
-app.get(/.*/, (req, res, next) => {
-  if (/^\/(tutores|pets|carteira|agendamentos)(\/|$)/.test(req.path)) {
-    return res.status(404).json({ error: 'Rota da API não encontrada.' });
-  }
-  return res.sendFile(path.join(frontendDirectory, 'index.html'), (error) => {
-    if (error) next(error);
-  });
-});
+//const frontendDirectory = path.join(__dirname, '..', 'frontend-paste', 'frontend', 'dist');
+//app.use(express.static(frontendDirectory));
+//app.get(/.*/, (req, res, next) => {
+  //if (/^\/(tutores|pets|carteira|agendamentos)(\/|$)/.test(req.path)) {
+    //return res.status(404).json({ error: 'Rota da API não encontrada.' });
+ // }
+ // return res.sendFile(path.join(frontendDirectory, 'index.html'), (error) => {
+ //   if (error) next(error);
+ // });
+//});
 
 /* ==========================================
    5. INICIALIZAÇÃO DO SERVIDOR
