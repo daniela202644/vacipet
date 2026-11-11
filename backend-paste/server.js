@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const path = require('node:path');
 
 const app = express();
+app.use(cors());
 const JWT_SECRET = process.env.JWT_SECRET || 'vacipet-local-development-secret';
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
@@ -15,23 +16,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
 }
 
 // Middlewares
-const allowedOrigins = new Set(
-  [
-    ...(process.env.FRONTEND_URL || '').split(',').map((origin) => origin.trim()).filter(Boolean),
-    ...(process.env.RENDER_EXTERNAL_HOSTNAME ? [`https://${process.env.RENDER_EXTERNAL_HOSTNAME}`] : []),
-  ]
-);
-app.use(cors({
-  origin(origin, callback) {
-    const isLocalDevelopment = process.env.NODE_ENV !== 'production'
-      && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin || '');
-    if (!origin || allowedOrigins.has(origin) || isLocalDevelopment) {
-      return callback(null, true);
-    }
-    return callback(new Error('Origem não autorizada.'));
-  },
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-}));
+app.use(cors());
 app.use(express.json());
 
 // Configuração da ligação ao PostgreSQL
